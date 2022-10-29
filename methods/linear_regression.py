@@ -15,11 +15,8 @@ class LinearRegression(object):
             Initialize the task_kind (see dummy_methods.py)
             and call set_arguments function of this class.
         """
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        self.task_kind = 'regression'
+        self.set_arguments(*args, **kwargs)
 
     def set_arguments(self, *args, **kwargs):
         """
@@ -29,11 +26,14 @@ class LinearRegression(object):
             You can either pass these as args or kwargs.
         """
 
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        if "lambda" in kwargs:
+            self.reg_arg = kwargs["lambda"]
+        # if not, then check if args is a list with size bigger than 0.
+        elif len(args) > 0 :
+            self.reg_arg = args[0]
+        # if there were no args or kwargs passed, we set the dummy_arg to 1 (default value).
+        else:
+            self.reg_arg = 1
     
 
     def fit(self, training_data, training_labels):
@@ -46,11 +46,15 @@ class LinearRegression(object):
                 pred_regression_targets (np.array): predicted target of shape (N,regression_target_size)
         """
         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        regression_target_size = training_labels.shape[1]
+        self.D = training_data.shape[1]
+        self.C = regression_target_size
+        for i in range(regression_target_size):
+            self.w = np.linalg.inv(training_data.T.dot(training_data) + self.reg_arg*np.identity(self.D)).dot(training_data.T).dot(training_labels[:,i])
+            if i == 0:
+                pred_regression_targets = training_data.dot(self.w).reshape(-1,1)
+            else:
+                pred_regression_targets = np.hstack((pred_regression_targets, training_data.dot(self.w).reshape(-1,1)))
 
         return pred_regression_targets
 
@@ -71,3 +75,4 @@ class LinearRegression(object):
         ##
 
         return pred_regression_targets
+
