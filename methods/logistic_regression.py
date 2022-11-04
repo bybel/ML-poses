@@ -17,11 +17,8 @@ class LogisticRegression(object):
             and call set_arguments function of this class.
         """
         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        self.task_kind = 'LogisticRegression'
+        self.set_arguments(*args, **kwargs)
 
     def set_arguments(self, *args, **kwargs):
         """
@@ -31,11 +28,7 @@ class LogisticRegression(object):
             You can either pass these as args or kwargs.
         """
         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        self.task_kind = 'LogisticRegression'
        
 
     def fit(self, training_data, training_labels):
@@ -48,14 +41,9 @@ class LogisticRegression(object):
                 pred_labels (np.array): target of shape (N,regression_target_size)
         """
         
-        
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+                
 
-        return pred_labels
+        return None# pred_labels
 
     def predict(self, test_data):
         """
@@ -72,4 +60,4 @@ class LogisticRegression(object):
         ###
         ##
 
-        return pred_labels
+        return #pred_labels

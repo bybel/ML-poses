@@ -16,6 +16,7 @@ class LinearRegression(object):
             and call set_arguments function of this class.
         """
         self.task_kind = 'regression'
+        self.iters = 1000
         self.set_arguments(*args, **kwargs)
 
     def set_arguments(self, *args, **kwargs):
@@ -45,17 +46,18 @@ class LinearRegression(object):
             Returns:
                 pred_regression_targets (np.array): predicted target of shape (N,regression_target_size)
         """
-        
-        regression_target_size = training_labels.shape[1]
         self.D = training_data.shape[1]
-        self.C = regression_target_size
-        for i in range(regression_target_size):
-            self.w = np.linalg.inv(training_data.T.dot(training_data) + self.reg_arg*np.identity(self.D)).dot(training_data.T).dot(training_labels[:,i])
-            if i == 0:
-                pred_regression_targets = training_data.dot(self.w).reshape(-1,1)
-            else:
-                pred_regression_targets = np.hstack((pred_regression_targets, training_data.dot(self.w).reshape(-1,1)))
-
+        self.N = training_data.shape[0]
+        self.regression_target_size = training_labels.shape[1]
+                
+        #pred_regression_targets = np.dot(np.linalg.inv(training_data.T.dot(training_data + self.reg_arg*np.identity(self.N, self.D))),training_data.T.dot(training_labels))
+        pred_regression_targets = np.linalg.inv(training_data.T.dot(training_data)).dot(training_data.T).dot(training_labels)
+        
+        self.w = pred_regression_targets
+        
+        return pred_regression_targets
+        # return self.predict(training_data)
+        
         return pred_regression_targets
 
     def predict(self, test_data):
@@ -73,6 +75,6 @@ class LinearRegression(object):
         #### YOUR CODE HERE! 
         ###
         ##
-
+        pred_regression_targets = np.dot(test_data, self.w.T)
         return pred_regression_targets
 

@@ -15,11 +15,21 @@ def splitting_fn(data, labels, indices, fold_size, fold):
             train_data, train_label, val_data, val_label (np. arrays): split training and validation sets
     """
                 
-    ##
-    ###
-    #### YOUR CODE HERE! 
-    ###
-    ##
+    for i in range(fold_size):
+        if i == fold:
+            val_data = data[indices[i*fold_size:(i+1)*fold_size]]
+            val_label = labels[indices[i*fold_size:(i+1)*fold_size]]
+        else:
+            if i == 0:
+                train_data = data[indices[i*fold_size:(i+1)*fold_size]]
+                train_label = labels[indices[i*fold_size:(i+1)*fold_size]]
+            else:
+                train_data = np.concatenate((train_data, data[indices[i*fold_size:(i+1)*fold_size]]), axis=0)
+                train_label = np.concatenate((train_label, labels[indices[i*fold_size:(i+1)*fold_size]]), axis=0)
+        
+    
+
+    #train_data, train_label, val_data, val_label = None, None, None, None
 
     return train_data, train_label, val_data, val_label
 
@@ -82,6 +92,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     ###
     ##
 
+            best_hyperparam, best_acc = None, None
 
     return best_hyperparam, best_acc
 
