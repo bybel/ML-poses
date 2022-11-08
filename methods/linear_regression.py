@@ -46,20 +46,16 @@ class LinearRegression(object):
             Returns:
                 pred_regression_targets (np.array): predicted target of shape (N,regression_target_size)
         """
-        self.D = training_data.shape[1]
+        self.D = training_data.shape[1] 
         self.N = training_data.shape[0]
         self.regression_target_size = training_labels.shape[1]
-                
-        #pred_regression_targets = np.dot(np.linalg.inv(training_data.T.dot(training_data + self.reg_arg*np.identity(self.N, self.D))),training_data.T.dot(training_labels))
-        pred_regression_targets = np.linalg.inv(training_data.T.dot(training_data)).dot(training_data.T).dot(training_labels)
+        training_data1 = np.insert(training_data, 0, 1, axis=1)
+        print(training_data1)
+        pred_regression_target = np.linalg.pinv(training_data1)@(training_labels)
         
-        self.w = pred_regression_targets
-        
+        self.w = pred_regression_target
+        pred_regression_targets= training_data1 @ self.w
         return pred_regression_targets
-        # return self.predict(training_data)
-        
-        return pred_regression_targets
-
     def predict(self, test_data):
         """
             Runs prediction on the test data.
@@ -68,13 +64,8 @@ class LinearRegression(object):
                 test_data (np.array): test data of shape (N,D)
             Returns:
                 pred_regression_targets (np.array): predicted targets of shape (N,regression_target_size)
-        """   
-
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-        pred_regression_targets = np.dot(test_data, self.w.T)
+        """
+        test_data = np.insert(test_data, 0, 1, axis=1)
+        print(test_data)
+        pred_regression_targets = np.dot(test_data, self.w)
         return pred_regression_targets
-
