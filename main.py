@@ -85,12 +85,22 @@ def main(args):
             train_labels = train_regression_target   
             search_arg_name = "dummy_arg"        
         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-
+        elif args.method_name == "linear_regression":
+            method_obj = LinearRegression()
+            search_arg_vals = [1,2,3]
+            train_labels = train_regression_target
+            search_arg_name = "lambda"
+        elif args.method_name == "ridge_regression":
+            method_obj = LinearRegression()
+            search_arg_vals = [1,2,3]
+            train_labels = train_regression_target
+            search_arg_name = "lambda"
+        
+        else:
+            method_obj = LogisticRegression()
+            search_arg_vals = [1,2,3]
+            search_arg_name = "lambda"
+            
         # cross validation (MS1)
         if args.use_cross_validation:
             print("Using cross validation")
