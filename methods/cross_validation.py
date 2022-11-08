@@ -14,22 +14,32 @@ def splitting_fn(data, labels, indices, fold_size, fold):
         Returns:
             train_data, train_label, val_data, val_label (np. arrays): split training and validation sets
     """
-                
-    for i in range(fold_size):
-        if i == fold:
-            val_data = data[indices[i*fold_size:(i+1)*fold_size]]
-            val_label = labels[indices[i*fold_size:(i+1)*fold_size]]
+    # we want to split the data into training and validation folds
+    # the validation fold is the fold with index "fold"
+    # the training folds are the other folds
+    # the training data is the data from the training folds
+    # the validation data is the data from the validation fold
+    # the training labels are the labels from the training folds
+    # the validation labels are the labels from the validation fold
+    #
+    # iterate over the folds, and append the data and labels to the training and validation
+    #val_data, val_label, train_data, train_label = np.array([]), np.array([]), np.array([]), np.array([])
+    D = data.shape[1]
+    N = data.shape[0]
+    val_data, train_data = [], []
+    val_label, train_label = np.empty(fold_size), np.empty(N-fold_size)
+    for i in range(len(indices)):
+        if(i >= fold*fold_size and i < (fold+1)*fold_size):
+            val_data.append(data[indices[i]])
+            val_label = np.append(val_label, labels[indices[i]])
+            
         else:
-            if i == 0:
-                train_data = data[indices[i*fold_size:(i+1)*fold_size]]
-                train_label = labels[indices[i*fold_size:(i+1)*fold_size]]
-            else:
-                train_data = np.concatenate((train_data, data[indices[i*fold_size:(i+1)*fold_size]]), axis=0)
-                train_label = np.concatenate((train_label, labels[indices[i*fold_size:(i+1)*fold_size]]), axis=0)
+            train_data.append(data[indices[i]])
+            train_label = np.append(train_label, labels[indices[i]])
         
-    
-
-    #train_data, train_label, val_data, val_label = None, None, None, None
+    # reshape the data
+    train_data = np.array(train_data).reshape(N-fold_size, D)
+    val_data = np.array(val_data).reshape(fold_size, D)
 
     return train_data, train_label, val_data, val_label
 
@@ -72,28 +82,37 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
         acc_list2 = []
         for fold in range(k_fold):
             
-                    
-            ##
-            ###
-            #### YOUR CODE HERE! 
-            ###
-            ##
-        
-         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-     
+            # split the data into training and validation folds
+            train_data, train_label, val_data, val_label = splitting_fn(data, labels, indices, fold_size, fold)
+            
+            # fit the model on the training data
+            method_obj.fit(train_data, train_label)
+            
+            # predict on the validation data
+            preds = method_obj.predict(val_data)
+            
+            # compute the metric on the validation data
+            metric_val = metric(val_label, preds)
+            
+            # append the metric to the list
+            acc_list2.append(metric_val)
+        # append the mean of the metric across folds to the list
+        acc_list1.append(np.mean(acc_list2))
+
+    # find the best hyper-parameter value   
+    best_hyperparam = search_arg_vals[find_param_ops(acc_list1)]
+    # find accuracy using the best hyper-parameter value
+    best_acc = np.min(acc_list1) if method_obj.task_kind == 'regression' else np.max(acc_list1)
+    
     ##
     ###
     #### YOUR CODE HERE! 
     ###
     ##
 
-            best_hyperparam, best_acc = None, None
-
+    #best_hyperparam, best_acc = 5.0, 1.0
+    print("best hyperparam: ", best_hyperparam)
+    print("best acc: ", best_acc)
     return best_hyperparam, best_acc
 
         
