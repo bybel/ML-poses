@@ -22,9 +22,7 @@ def normalize_fn(data, means, stds):
     Outputs:
         data_normed: shape (NxD)
     """
-    data_normed = np.arange(data.shape[0]*data.shape[1]).reshape(data.shape)
-    for i in range(data.shape[1]):
-        data_normed[:,i] = (data[:,i] - means[0,i])/stds[0,i]
     
+    data_normed = (data - means) / stds
     return data_normed
 
