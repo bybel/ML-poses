@@ -14,32 +14,26 @@ def splitting_fn(data, labels, indices, fold_size, fold):
         Returns:
             train_data, train_label, val_data, val_label (np. arrays): split training and validation sets
     """
-    # we want to split the data into training and validation folds
-    # the validation fold is the fold with index "fold"
-    # the training folds are the other folds
-    # the training data is the data from the training folds
-    # the validation data is the data from the validation fold
-    # the training labels are the labels from the training folds
-    # the validation labels are the labels from the validation fold
-    #
-    # iterate over the folds, and append the data and labels to the training and validation
-    #val_data, val_label, train_data, train_label = np.array([]), np.array([]), np.array([]), np.array([])
+    
     D = data.shape[1]
     N = data.shape[0]
-    val_data, train_data = [], []
-    val_label, train_label = np.empty(fold_size), np.empty(N-fold_size)
-    for i in range(len(indices)):
-        if(i >= fold*fold_size and i < (fold+1)*fold_size):
-            val_data.append(data[indices[i]])
-            val_label = np.append(val_label, labels[indices[i]])
+    # val_data, train_data = [], []
+    # val_label, train_label = np.empty(fold_size), np.empty(N-fold_size)
+    # for i in range(len(indices)):
+    #     if(i >= fold*fold_size and i < (fold+1)*fold_size):
+    #         val_data.append(data[indices[i]])
+    #         val_label = np.append(val_label, labels[indices[i]])
             
-        else:
-            train_data.append(data[indices[i]])
-            train_label = np.append(train_label, labels[indices[i]])
-        
-    # reshape the data
-    train_data = np.array(train_data).reshape(N-fold_size, D)
-    val_data = np.array(val_data).reshape(fold_size, D)
+    #     else:
+    #         train_data.append(data[indices[i]])
+    #         train_label = np.append(train_label, labels[indices[i]])
+    train_data = data[:fold*fold_size]
+    train_data = np.append(train_data, data[(fold+1)*fold_size:], axis=0)
+    train_label = labels[:fold*fold_size]
+    train_label = np.append(train_label, labels[(fold+1)*fold_size:])
+    
+    val_data = data[fold*fold_size:(fold+1)*fold_size]
+    val_label = labels[fold*fold_size:(fold+1)*fold_size]
 
     return train_data, train_label, val_data, val_label
 
