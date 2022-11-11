@@ -86,17 +86,17 @@ def main(args):
             search_arg_name = "dummy_arg"        
         
         elif args.method_name == "linear_regression":
-            method_obj = LinearRegression()
+            method_obj = LinearRegression(lmda=0)
             search_arg_vals = [1,2,3]
             train_labels = train_regression_target
             search_arg_name = "lambda"
         elif args.method_name == "ridge_regression":
-            method_obj = LinearRegression()
+            method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
             search_arg_vals = [1,2,3]
             train_labels = train_regression_target
             search_arg_name = "lambda"
         
-        else:
+        elif args.method_name == "logistic_regression":
             method_obj = LogisticRegression()
             search_arg_vals = [1,2,3]
             search_arg_name = "lambda"
