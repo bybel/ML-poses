@@ -23,7 +23,6 @@ class LinearRegression(object):
         """
             args and kwargs are super easy to use! See dummy_methods.py
             In case of ridge regression, you need to define lambda regularizer(lmda).
-
             You can either pass these as args or kwargs.
         """
 
@@ -49,12 +48,11 @@ class LinearRegression(object):
         self.D = training_data.shape[1] 
         self.N = training_data.shape[0]
         self.regression_target_size = training_labels.shape[1]
-        training_data1 = np.insert(training_data, 0, 1, axis=1)
-        print(training_data1)
-        pred_regression_target = np.linalg.pinv(training_data1)@(training_labels)
+        print(training_data)
+        pred_regression_target = np.linalg.inv(training_data.T@training_data+self.reg_arg*np.identity(self.D))@training_data.T@(training_labels)
         
         self.w = pred_regression_target
-        pred_regression_targets= training_data1 @ self.w
+        pred_regression_targets= training_data @ self.w
         return pred_regression_targets
     def predict(self, test_data):
         """
@@ -65,7 +63,6 @@ class LinearRegression(object):
             Returns:
                 pred_regression_targets (np.array): predicted targets of shape (N,regression_target_size)
         """
-        test_data = np.insert(test_data, 0, 1, axis=1)
         print(test_data)
         pred_regression_targets = np.dot(test_data, self.w)
         return pred_regression_targets
