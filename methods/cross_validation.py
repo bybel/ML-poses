@@ -17,31 +17,13 @@ def splitting_fn(data, labels, indices, fold_size, fold):
     
     D = data.shape[1]
     N = data.shape[0]
-    # val_data, train_data = [], []
-    # val_label, train_label = np.empty(fold_size), np.empty(N-fold_size)
-    # for i in range(len(indices)):
-    #     if(i >= fold*fold_size and i < (fold+1)*fold_size):
-    #         val_data.append(data[indices[i]])
-    #         val_label = np.append(val_label, labels[indices[i]])
-            
-    #     else:
-    #         train_data.append(data[indices[i]])
-    #         train_label = np.append(train_label, labels[indices[i]])
-    
-    
-    train_data = data[indices[:fold*fold_size]]
+    train_data = data[:fold*fold_size]
     train_data = np.append(train_data, data[(fold+1)*fold_size:], axis=0)
-    train_label = labels[indices[:fold*fold_size]]
-    train_label = np.append(train_label, labels[(fold+1)*fold_size:])
+    train_label = labels[:fold*fold_size]
+    train_label = np.append(train_label, labels[(fold+1)*fold_size:],axis=0)
     
-    print(f"fold: {fold}, train_data: {train_data.shape}, labels: {labels.shape}")
-    
-    val_data = data[indices[fold*fold_size:(fold+1)*fold_size]]
-    val_label = labels[indices[fold*fold_size:(fold+1)*fold_size]]
-    # train_indices = np.set
-    # data[train_indices]
-        
-    print(train_data.shape, train_label.shape, val_data.shape, val_label.shape)
+    val_data = data[fold*fold_size:(fold+1)*fold_size]
+    val_label = labels[fold*fold_size:(fold+1)*fold_size]
 
     return train_data, train_label, val_data, val_label
 
@@ -83,8 +65,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
 
         acc_list2 = []
         for fold in range(k_fold):
-            
-            # split the data into training and validation folds
+                   # split the data into training and validation folds
             train_data, train_label, val_data, val_label = splitting_fn(data, labels, indices, fold_size, fold)
             
             # fit the model on the training data
@@ -105,19 +86,6 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     best_hyperparam = search_arg_vals[find_param_ops(acc_list1)]
     # find accuracy using the best hyper-parameter value
     best_acc = np.min(acc_list1) if method_obj.task_kind == 'regression' else np.max(acc_list1)
-    
-    ##
-    ###
-    #### YOUR CODE HERE! 
-    ###
-    ##
 
-    #best_hyperparam, best_acc = 5.0, 1.0
-    print("best hyperparam: ", best_hyperparam)
-    print("best acc: ", best_acc)
+
     return best_hyperparam, best_acc
-
-        
-
-
-    
