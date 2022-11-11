@@ -3,6 +3,17 @@ import sys
 sys.path.append('..')
 from utils import label_to_onehot
 def logistic_regression_train_multi(self,data, labels, k, max_iters, lr):
+    """
+    Trains multi-class logistic regression.
+        Arguments:
+            data (np.array): Data of shape (N, D).
+            labels (np.array): Labels of shape (N, ).
+            k (int): Number of classes.
+            max_iters (int): Maximum number of iterations.
+            lr (float): Learning rate.
+        Returns:
+            pred_labels (np.array): Predicted labels of shape (N, ).
+    """
     self.w = np.random.normal(0, 0.1, [data.shape[1], k])
     for it in range(max_iters):
         gradient = gradient_logistic_multi(data, labels, self.w)
