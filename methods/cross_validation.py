@@ -27,21 +27,20 @@ def splitting_fn(data, labels, indices, fold_size, fold):
     #     else:
     #         train_data.append(data[indices[i]])
     #         train_label = np.append(train_label, labels[indices[i]])
-    train_data = data[:fold*fold_size]
+    
+    
+    train_data = data[indices[:fold*fold_size]]
     train_data = np.append(train_data, data[(fold+1)*fold_size:], axis=0)
-    train_label = labels[:fold*fold_size]
+    train_label = labels[indices[:fold*fold_size]]
     train_label = np.append(train_label, labels[(fold+1)*fold_size:])
     
     print(f"fold: {fold}, train_data: {train_data.shape}, labels: {labels.shape}")
     
-    val_data = data[fold*fold_size:(fold+1)*fold_size]
-    val_label = labels[fold*fold_size:(fold+1)*fold_size]
-    
-    train_data.reshape(N-fold_size, D)
-    train_label.reshape(N-fold_size)
-    val_data.reshape(fold_size, D)
-    val_label.reshape(fold_size)
-    
+    val_data = data[indices[fold*fold_size:(fold+1)*fold_size]]
+    val_label = labels[indices[fold*fold_size:(fold+1)*fold_size]]
+    # train_indices = np.set
+    # data[train_indices]
+        
     print(train_data.shape, train_label.shape, val_data.shape, val_label.shape)
 
     return train_data, train_label, val_data, val_label
