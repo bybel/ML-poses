@@ -47,8 +47,8 @@ class LinearRegression(object):
         """
         self.D = training_data.shape[1] 
         self.N = training_data.shape[0]
-        self.regression_target_size = training_labels.shape[1]
-        print(training_data)
+        self.regression_target_size = training_labels.shape[1] if len(training_labels.shape) > 1 else 1
+        #print(training_data)
         pred_regression_target = np.linalg.inv(training_data.T@training_data+self.reg_arg*np.identity(self.D))@training_data.T@(training_labels)
         
         self.w = pred_regression_target
