@@ -2,26 +2,15 @@ import numpy as np
 import sys
 sys.path.append('..')
 from utils import label_to_onehot
-def logistic_regression_train_multi(self,data, labels, k, max_iters, lr):
-    """
-    Trains multi-class logistic regression.
-        Arguments:
-            data (np.array): Data of shape (N, D).
-            labels (np.array): Labels of shape (N, ).
-            k (int): Number of classes.
-            max_iters (int): Maximum number of iterations.
-            lr (float): Learning rate.
-        Returns:
-            pred_labels (np.array): Predicted labels of shape (N, ).
-    """
-    self.w = np.random.normal(0, 0.1, [data.shape[1], k])
+def logistic_regression_train_multi(data, labels, k, max_iters, lr):
+    w = np.random.normal(0, 0.1, [data.shape[1], k])
     for it in range(max_iters):
-        gradient = gradient_logistic_multi(data, labels, self.w)
-        self.w = self.w - lr*gradient
-        predictions = logistic_regression_classify_multi(data, self.w)
+        gradient = gradient_logistic_multi(data, labels, w)
+        w = w - lr*gradient
+        predictions = logistic_regression_classify_multi(data, w)
         if accuracy_fn(np.argmax(labels, axis=1), predictions) == 1:
             break
-    return predictions
+    return predictions,w
 def label_to_onehot(label):
     one_hot_labels = np.zeros([label.shape[0], int(np.max(label)+1)])
     one_hot_labels[np.arange(label.shape[0]), label.astype(np.int)] = 1
@@ -29,17 +18,12 @@ def label_to_onehot(label):
 
 def f_softmax(data, w):
     x=data@w
-    return np.exp(x)/sum(np.exp(x))
-
-def loss_logistic_multi(data, labels, w):
-    loss = -np.sum(labels*np.log(f_softmax(data, w)))
-    return loss
+    return (np.exp(x ) / np.exp(x).sum())
 
 def gradient_logistic_multi(data, labels, w):
-    return data.T@(f_softmax(data,w)-labels)
+    return (data.T@(f_softmax(data,w)-labels))
 
 def logistic_regression_classify_multi(data, w):
-    print(np.argmax(f_softmax(data,w)))
     return np.argmax(f_softmax(data,w),axis=1)
 
 def accuracy_fn(labels_gt, labels_pred):
@@ -77,8 +61,8 @@ class LogisticRegression(object):
             and the number of max iterations (max_iters)
             You can either pass these as args or kwargs.
         """
-        self.iters = 1000
-        self.lr = 0.001
+        self.iters = 100
+        self.lr = 0.000001
         if "lr" in kwargs:
             self.lr= kwargs["lr"]
         elif len(args) > 0 :
@@ -87,7 +71,7 @@ class LogisticRegression(object):
         if "max_iters" in kwargs :
             self.iters = kwargs["max_iters"]
         elif len(args) > 1 :
-            self.reg_arg = args[1]
+            self.lr= args[1]
        
 
     def fit(self, training_data, training_labels):
@@ -100,8 +84,8 @@ class LogisticRegression(object):
                 pred_labels (np.array): target of shape (N,)
         """
         training_labels=label_to_onehot(training_labels)
-        return logistic_regression_train_multi(self,training_data, training_labels, training_labels.shape[1], self.iters, self.lr)
-
+        a, self.w = logistic_regression_train_multi(training_data, training_labels, training_labels.shape[1], self.iters, self.lr)
+        return a
     def predict(self, test_data):
         """
             Runs prediction on the test data.
@@ -111,5 +95,5 @@ class LogisticRegression(object):
             Returns:
                 test_labels (np.array): labels of shape (N,)
         """   
-
-        return logistic_regression_classify_multi(test_data, self.w)
+        result=logistic_regression_classify_multi(test_data, self.w)
+        return result

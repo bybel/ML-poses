@@ -14,7 +14,11 @@ from methods.knn import KNN
 from methods.dummy_methods import DummyClassifier, DummyRegressor
 from methods.logistic_regression import LogisticRegression
 from methods.linear_regression import LinearRegression
+def append_bias_term(X_train):
 
+    ones_column = np.ones([X_train.shape[0], 1])
+    X_train_bias = np.concatenate([X_train, ones_column], axis=1)
+    return X_train_bias
 def main(args):
     # First we create all of our dataset objects. The dataset objects store the data, labels (for classification) and the targets for regression
     if args.dataset=="h36m":
@@ -47,8 +51,10 @@ def main(args):
         pca_obj = PCA(d = 200)
         pca_obj.find_principal_components(train_data)
         train_data = pca_obj.reduce_dimension(train_data)
+        train_data = np.insert(train_data, 0, 1, axis=1)
         train_regression_target = pca_obj.reduce_dimension(train_regression_target)
         test_data = pca_obj.reduce_dimension(test_data)
+        test_data = np.insert(test_data, 0, 1, axis=1)
         test_regression_target = pca_obj.reduce_dimension(test_regression_target)
 
     # Neural network. (This part is only relevant for MS2.)
@@ -87,19 +93,19 @@ def main(args):
         
         elif args.method_name == "linear_regression":
             method_obj = LinearRegression(lmda=0)
-            search_arg_vals = [1,2,3]
+            search_arg_vals = [0]
             train_labels = train_regression_target
-            search_arg_name = "lambda"
+            search_arg_name = "lmda"
         elif args.method_name == "ridge_regression":
             method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
-            search_arg_vals = [1,2,3]
+            search_arg_vals = [0.001,0.01,0.1,1,10,100,200]
             train_labels = train_regression_target
-            search_arg_name = "lambda"
+            search_arg_name = "lmda"
         
         elif args.method_name == "logistic_regression":
             method_obj = LogisticRegression()
-            search_arg_vals = [1,2,3]
-            search_arg_name = "lambda"
+            search_arg_vals = [0.000001,0.0000001,0.00000001]
+            search_arg_name = "lr"
             
         # cross validation (MS1)
         if args.use_cross_validation:

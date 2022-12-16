@@ -17,6 +17,8 @@ def splitting_fn(data, labels, indices, fold_size, fold):
     
     D = data.shape[1]
     N = data.shape[0]
+    data = data[indices]
+    labels = labels[indices]
     train_data = data[:fold*fold_size]
     train_data = np.append(train_data, data[(fold+1)*fold_size:], axis=0)
     train_label = labels[:fold*fold_size]
@@ -75,7 +77,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
             preds = method_obj.predict(val_data)
             
             # compute the metric on the validation data
-            metric_val = metric(val_label, preds)
+            metric_val = metric(preds,val_label)
             
             # append the metric to the list
             acc_list2.append(metric_val)
@@ -85,7 +87,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     # find the best hyper-parameter value   
     best_hyperparam = search_arg_vals[find_param_ops(acc_list1)]
     # find accuracy using the best hyper-parameter value
+    method_obj.set_arguments(best_hyperparam)
     best_acc = np.min(acc_list1) if method_obj.task_kind == 'regression' else np.max(acc_list1)
-
 
     return best_hyperparam, best_acc

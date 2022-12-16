@@ -22,7 +22,7 @@ def normalize_fn(data, means, stds):
     Outputs:
         data_normed: shape (NxD)
     """
-    
-    data_normed = (data - means) / stds
-    return data_normed
+    # WRITE YOUR CODE HERE
+    # return the normalized features
+    return (data - means) / stds
 

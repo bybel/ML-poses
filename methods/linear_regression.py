@@ -16,7 +16,7 @@ class LinearRegression(object):
             and call set_arguments function of this class.
         """
         self.task_kind = 'regression'
-        self.iters = 1000
+        self.iters = 100
         self.set_arguments(*args, **kwargs)
 
     def set_arguments(self, *args, **kwargs):
@@ -26,8 +26,8 @@ class LinearRegression(object):
             You can either pass these as args or kwargs.
         """
 
-        if "lambda" in kwargs:
-            self.reg_arg = kwargs["lambda"]
+        if "lmda" in kwargs:
+            self.reg_arg = kwargs["lmda"]
         # if not, then check if args is a list with size bigger than 0.
         elif len(args) > 0 :
             self.reg_arg = args[0]
@@ -47,10 +47,9 @@ class LinearRegression(object):
         """
         self.D = training_data.shape[1] 
         self.N = training_data.shape[0]
-        self.regression_target_size = training_labels.shape[1] if len(training_labels.shape) > 1 else 1
-        #print(training_data)
-        pred_regression_target = np.linalg.inv(training_data.T@training_data+self.reg_arg*np.identity(self.D))@training_data.T@(training_labels)
-        
+        temp1 = training_data.T@training_data+self.reg_arg*np.identity(self.D)
+        temp2 = training_data.T@(training_labels)
+        pred_regression_target = np.linalg.inv(temp1)@temp2
         self.w = pred_regression_target
         pred_regression_targets= training_data @ self.w
         return pred_regression_targets
@@ -63,6 +62,5 @@ class LinearRegression(object):
             Returns:
                 pred_regression_targets (np.array): predicted targets of shape (N,regression_target_size)
         """
-        print(test_data)
         pred_regression_targets = np.dot(test_data, self.w)
         return pred_regression_targets
