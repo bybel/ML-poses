@@ -46,4 +46,19 @@ def mse_fn(pred,gt):
     loss = np.mean(loss)
     return loss
 
+def euclidean_distance(example, training_examples):
+    """
+        Function to compute the Euclidean distance between a single example
+        vector and all training_examples
 
+        Inputs:
+            example: shape (D,)
+            training_examples: shape (NxD) 
+        Outputs:
+            return distance vector of length N
+    """
+    
+    res = np.sqrt(np.sum((example - training_examples)**2, axis=1))
+    
+    
+    return res

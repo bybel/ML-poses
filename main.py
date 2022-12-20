@@ -14,12 +14,26 @@ from methods.knn import KNN
 from methods.dummy_methods import DummyClassifier, DummyRegressor
 from methods.logistic_regression import LogisticRegression
 from methods.linear_regression import LinearRegression
+import methods.deep_network as deep_network
+
 def append_bias_term(X_train):
 
     ones_column = np.ones([X_train.shape[0], 1])
     X_train_bias = np.concatenate([X_train, ones_column], axis=1)
     return X_train_bias
 def main(args):
+    
+    # # create model
+    # model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
+    
+    # # training loop
+    # trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
+    # trainer.train_all(train_dataloader, val_dataloader)
+    # results_class = trainer.eval(test_dataloader)
+    # torch.save(results_class, "results_class.txt")
+
+    
+    
     # First we create all of our dataset objects. The dataset objects store the data, labels (for classification) and the targets for regression
     if args.dataset=="h36m":
         train_dataset = H36M_Dataset(split="train", path_to_data=args.path_to_data)
@@ -57,23 +71,7 @@ def main(args):
         test_data = np.insert(test_data, 0, 1, axis=1)
         test_regression_target = pca_obj.reduce_dimension(test_regression_target)
 
-    # Neural network. (This part is only relevant for MS2.)
-    if args.method_name == "nn":
-        # Pytorch dataloaders
-        print("Using deep network")
-        train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-        val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-        test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
-        # create model
-        model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes, regression_output_size=train_dataset.regression_target_size)
-        
-        # training loop
-        trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
-        trainer.train_all(train_dataloader, val_dataloader)
-        results_class, results_reg = trainer.eval(test_dataloader)
-        torch.save(results_class, "results_class.txt")
-        torch.save(results_reg, "results_reg.txt")
+    
     
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects
@@ -107,6 +105,28 @@ def main(args):
             search_arg_vals = [0.000001,0.0000001,0.00000001]
             search_arg_name = "lr"
             
+        elif args.method_name == "knn":
+            method_obj = KNN(k=args.knn_neighbours)
+            search_arg_vals = [1,2,3,4,5,6,7,8,9,10]
+            search_arg_name = "k"
+            
+        # Neural network. (This part is only relevant for MS2.)
+        elif args.method_name == "nn":
+            # Pytorch dataloaders
+            print("Using deep network")
+            train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+            val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+            test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+            # create model
+            model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes, regression_output_size=train_dataset.regression_target_size)
+            
+            # training loop
+            trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
+            trainer.train_all(train_dataloader, val_dataloader)
+            results_class, results_reg = trainer.eval(test_dataloader)
+            torch.save(results_class, "results_class.txt")
+            torch.save(results_reg, "results_reg.txt")
         # cross validation (MS1)
         if args.use_cross_validation:
             print("Using cross validation")
