@@ -13,11 +13,10 @@ class SimpleNetwork(nn.Module):
     def __init__(self, input_size, num_classes, hidden_size=32):
         super(SimpleNetwork, self).__init__()
 
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        self.conv2d = nn.Conv2d(1, hidden_size, kernel_size=3, stride=1, padding=1)
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+
 
     def forward(self, x):
         """
@@ -28,12 +27,8 @@ class SimpleNetwork(nn.Module):
         Returns:
             output_class (torch.tensor): shape (N, C) (logits)
         """
-
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        x = F.relu(self.fc1(x))
+        output_class = self.fc2(x)
 
         return output_class
 
@@ -77,11 +72,26 @@ class Trainer(object):
         i.e. self.model.train()
         """
         
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        for it, batch in enumerate(dataloader):
+            # 5.1 Load a batch, break it down in images and targets.
+            x, y, z = batch
+            print(batch)
+
+            # 5.2 Run forward pass.
+            logits = self.model(x)
+            
+            # 5.3 Compute loss (using 'criterion').
+            loss = self.classification_criterion(logits, y)
+            
+            # 5.4 Run backward pass.
+            loss.backward()
+            
+            # 5.5 Update the weights using optimizer.
+            self.optimizer.step()
+            
+            # 5.6 Zero-out the accumulated gradients.
+            self.optimizer.zero_grad()
+        
 
     def eval(self, dataloader):
         """
@@ -94,10 +104,13 @@ class Trainer(object):
                 We return one torch tensor which we will use to save our results (for the competition!)
                 results_class (torch.tensor): classification results of shape (N,)
         """
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-        
+        self.model.eval()
+        with torch.no_grad():
+            acc_run = 0
+            for it, batch in enumerate(dataloader):
+                x, y, z = batch
+                curr_batch_size = x.shape[0]
+                acc_run += accuracy_fn(self.model(x), y) * curr_batch_size
+            acc = acc_run / len(dataloader.dataset)
+        results_class = torch.tensor([acc])
         return results_class
