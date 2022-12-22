@@ -2,9 +2,9 @@ import numpy as np
 import argparse
 
 # these will be imported in MS2. uncomment then!
-#import torch
-#from torch.utils.data import DataLoader
-#from methods.deep_network import SimpleNetwork, Trainer
+import torch
+from torch.utils.data import DataLoader
+from methods.deep_network import SimpleNetwork, Trainer
 
 from data import H36M_Dataset, FMA_Dataset, Movie_Dataset
 from methods.pca import PCA
@@ -14,7 +14,6 @@ from methods.knn import KNN
 from methods.dummy_methods import DummyClassifier, DummyRegressor
 from methods.logistic_regression import LogisticRegression
 from methods.linear_regression import LinearRegression
-import methods.deep_network as deep_network
 
 def append_bias_term(X_train):
 
@@ -23,23 +22,13 @@ def append_bias_term(X_train):
     return X_train_bias
 def main(args):
     
-    # # create model
-    # model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
-    
-    # # training loop
-    # trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
-    # trainer.train_all(train_dataloader, val_dataloader)
-    # results_class = trainer.eval(test_dataloader)
-    # torch.save(results_class, "results_class.txt")
-
-    
     
     # First we create all of our dataset objects. The dataset objects store the data, labels (for classification) and the targets for regression
     if args.dataset=="h36m":
         train_dataset = H36M_Dataset(split="train", path_to_data=args.path_to_data)
         test_dataset = H36M_Dataset(split="test", path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
         #uncomment for MS2
-        #val_dataset = H36M_Dataset(split="val",path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
+        val_dataset = H36M_Dataset(split="val",path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
 
     elif args.dataset=="music":
         train_dataset = FMA_Dataset(split="train", path_to_data=args.path_to_data)
@@ -117,6 +106,7 @@ def main(args):
             train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
             val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
             test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+            
 
             # create model
             model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes, regression_output_size=train_dataset.regression_target_size)
