@@ -55,10 +55,8 @@ def main(args):
         pca_obj.find_principal_components(train_data)
         train_data = pca_obj.reduce_dimension(train_data)
         train_data = np.insert(train_data, 0, 1, axis=1)
-        train_regression_target = pca_obj.reduce_dimension(train_regression_target)
         test_data = pca_obj.reduce_dimension(test_data)
         test_data = np.insert(test_data, 0, 1, axis=1)
-        test_regression_target = pca_obj.reduce_dimension(test_regression_target)
 
     
     
