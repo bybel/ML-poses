@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from metrics import accuracy_fn, macrof1_fn
+import numpy as np
 
 ## MS2!!
 
@@ -106,17 +107,31 @@ class Trainer(object):
         
         with torch.no_grad():
             results_class = []
-            acc_run = 0
+            total_y = []
             for it, batch in enumerate(dataloader):
                 x, _, y = batch
-                x_out = self.model(x)
-                curr_batch_size = x.shape[0]
-                
-                X = torch.zeros(y.shape)
-                X[torch.argmax(x_out)] = 1
-                acc_run += accuracy_fn(X, y) * curr_batch_size
-                results_class.append(torch.argmax(x_out))
-            acc = acc_run / len(dataloader.dataset)
+                labels = np.argmax(self.model(x), axis=1)
+                labels = labels.tolist()
+                y = y.tolist()
+                total_y += y
+                results_class += labels
+            acc = accuracy_fn(np.array(results_class), total_y)
+            f1_score = macrof1_fn(np.array(results_class), total_y)
             
-            print("Accuracy: ", acc)
-        return results_class
+            
+        return torch.FloatTensor(results_class)
+            
+            
+            # for it, batch in enumerate(dataloader):
+            #     x, _, y = batch
+            #     x_out = self.model(x)
+            #     curr_batch_size = x.shape[0]
+                
+            #     X = torch.zeros(y.shape)
+            #     X[torch.argmax(x_out)] = 1
+            #     acc_run += accuracy_fn(X, y) * curr_batch_size
+            #     results_class.append(torch.argmax(x_out))
+            # acc = acc_run / len(dataloader.dataset)
+            
+            # print("Accuracy: ", acc)
+        
