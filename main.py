@@ -113,8 +113,7 @@ def main(args):
             trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
             trainer.train_all(train_dataloader, val_dataloader)
             results_class = trainer.eval(test_dataloader)
-            torch.save(results_class, "results_class.txt")
-
+            np.save("results_class", results_class.numpy())
         # cross validation (MS1)
         if args.use_cross_validation:
             print("Using cross validation")

@@ -13,7 +13,6 @@ class SimpleNetwork(nn.Module):
     def __init__(self, input_size, num_classes, hidden_size=32):
         super(SimpleNetwork, self).__init__()
 
-        self.conv2d = nn.Conv2d(1, hidden_size, kernel_size=3, stride=1, padding=1)
         self.fc1 = nn.Linear(input_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, num_classes)
 
@@ -71,12 +70,11 @@ class Trainer(object):
         Don't forget to set your model to training mode!
         i.e. self.model.train()
         """
-        
+        self.model.train()
         for it, batch in enumerate(dataloader):
             # 5.1 Load a batch, break it down in images and targets.
-            x, y, z = batch
-            print(batch)
-
+            x, _, y = batch
+            
             # 5.2 Run forward pass.
             logits = self.model(x)
             
@@ -105,12 +103,20 @@ class Trainer(object):
                 results_class (torch.tensor): classification results of shape (N,)
         """
         self.model.eval()
+        
         with torch.no_grad():
+            results_class = []
             acc_run = 0
             for it, batch in enumerate(dataloader):
-                x, y, z = batch
+                x, _, y = batch
+                x_out = self.model(x)
                 curr_batch_size = x.shape[0]
-                acc_run += accuracy_fn(self.model(x), y) * curr_batch_size
+                
+                X = torch.zeros(y.shape)
+                X[torch.argmax(x_out)] = 1
+                acc_run += accuracy_fn(X, y) * curr_batch_size
+                results_class.append(torch.argmax(x_out))
             acc = acc_run / len(dataloader.dataset)
-        results_class = torch.tensor([acc])
+            
+            print("Accuracy: ", acc)
         return results_class
